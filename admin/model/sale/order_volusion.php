@@ -965,13 +965,25 @@ class ModelSaleOrderVolusion extends Model {
 		}
 		
 		$this->db->query($query);
+
 		
 		return true;
+	}
+
+	public function getSavedCards($order_id, $payment_method) {
+		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order_payment` WHERE payment_method='{$payment_method}' AND save_credit_card=1 AND order_id IN (SELECT order_id FROM `" . DB_PREFIX . "order` WHERE email=(SELECT email FROM `" . DB_PREFIX . "order` WHERE order_id='{$order_id}'))");
+		
+		return $query->rows;
 	}
 
 	public function getOrderPayments($order_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_payment WHERE order_id='{$order_id}' ORDER BY created ASC");
 		return $query->rows;
+	}
+
+	public function delOrderPayment($order_payment_id){
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "order_payment` WHERE order_payment_id = '" . (int)$order_payment_id . "'");		
+		return true;
 	}
 }
 ?>

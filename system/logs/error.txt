@@ -1100,3 +1100,6 @@
 2016-07-13 22:27:11 - PHP Notice:  Undefined variable: url in E:\xampp\htdocs\ocv15\admin\controller\sale\order_volusion.php on line 1226
 2016-07-13 22:30:44 - PHP Notice:  Undefined variable: url in E:\xampp\htdocs\ocv15\admin\controller\sale\order_volusion.php on line 1226
 2016-07-14 15:12:34 - PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in E:\xampp\htdocs\ocv15\system\library\mail.php on line 150
+2016-07-18 10:38:10 - PHP Notice:  Use of undefined constant accordion_payments - assumed 'accordion_payments' in C:\xampp\htdocs\ocv15\admin\view\template\sale\order_volusion_form.tpl on line 612
+2016-07-18 18:05:52 - PHP Notice:  Array to string conversion in C:\xampp\htdocs\ocv15\system\library\response.php on line 68
+2016-07-18 18:09:05 - PHP Notice:  Array to string conversion in C:\xampp\htdocs\ocv15\system\library\response.php on line 68

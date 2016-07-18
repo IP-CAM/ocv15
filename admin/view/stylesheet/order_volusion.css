@@ -2307,7 +2307,8 @@ tr.overlaybuttonarea td {
     background-color: transparent;
 }
 .v13-grid>form>table .v13-column-headers>td, .v13-grid>form>table>tbody>tr:first-child>td, .v13-grid>form>table>tr:first-child>td, .v13-grid>table .v13-column-headers>td, .v13-grid>table>tbody>tr:first-child>td, .v13-grid>table>tr:first-child>td {
-    background-color: #bef0fc;
+    /*7.18 alternating */
+    /*background-color: #bef0fc;*/ 
     border-right: 1px solid #fff;
 }
 .v13-grid>form>table .v13-column-headers>td span[class*=v13-icon-delete], .v13-grid>form>table>tbody>tr:first-child>td span[class*=v13-icon-delete], .v13-grid>form>table>tr:first-child>td span[class*=v13-icon-delete], .v13-grid>table .v13-column-headers>td span[class*=v13-icon-delete], .v13-grid>table>tbody>tr:first-child>td span[class*=v13-icon-delete], .v13-grid>table>tr:first-child>td span[class*=v13-icon-delete] {
@@ -4962,3 +4963,52 @@ textarea[name="pay_note"]{
     display: none;
 }
 .one_row label em{color: red;}
+.title td{
+    background-color: #bef0fc;
+    border-right: 1px solid #fff;
+    padding: 15px;
+}
+#order_payment tr{
+    background-color: #ffffff;
+}
+#order_payment .note td div{
+    background-color: #fcf4f0;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #000000;
+}
+#order_payment .note td{
+    background-color: #f2f2f2;
+    border: none;
+    padding: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+#order_payment tr td[algin="center"]{
+    background-color: #FFF;
+    border: none;
+    padding: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #000000;
+}
+#order_payment tr td[align="center"] a{
+    background-position: -312px 0;
+    background-image: url("../../../admin/view/image/glyphicons-halflings.png");
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    background-repeat: no-repeat;
+    display: block;
+    margin: 0 auto;
+    text-decoration: none!important;
+    outline: none;
+}
+#order_payment tr td{
+    font-size: 12px;
+    padding: 8px 15px;
+}
+td div span{
+    margin: 0 15px;
+}

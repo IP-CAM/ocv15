@@ -471,7 +471,7 @@
                             <div class="one_row pay_credit_card">
                           <label for="sel_credit_card">Use a Saved Card</label>
                           <select name="sel_credit_card" id="sel_credit_card">
-                            <option value="">Select</option>
+                            <?php echo $savedCcHtml; ?>
                           </select>
                         </div>
                         <div class="one_row pay_credit_card">
@@ -596,18 +596,21 @@
               <td>    
                 <div class="contentareanoscrollstyle v13-grid">
                   <table id="payment_log_table" class="rounded-corner rounded-table table-standard" cellspacing=0 cellpadding=0>
-                      <tbody>
+                      <thead>
                         <tr class="title underlined">
                           <td>Payment Date</td>
                           <td>Payment Type</td>
-                          <td>Affects Balance</td>
+                          <td style="width: 65px;">Affects Balance</td>
                           <td>Detail</td>
                           <td>Payment Amount</td>
                           <td>Balance Due</td>
                           <td>&nbsp;</td>
                         </tr>                       
+                      </thead>
+                      <tbody id="order_payment">
+                      <!-- Adding to javascript(line to 1067) -->
+                      <?php echo $accordion_payments; ?>
                       </tbody>
-                      <!-- <tfoot id="payment_records_body"></tfoot> -->
                   </table>
                 </div>
               </td>
@@ -923,20 +926,20 @@ $('input[name=\'product\']').autocomplete({
   jQuery(document).ready(function ($) {
     $('.a65chromecontent').css('display','none');
     $('#a65chromeheader_1').click(function(){                                        
-        if($('#arrow_link_1').hasClass('rotate_arrow')) $('#arrow_link_1').removeClass('rotate_arrow');
-        else $('#arrow_link_1').addClass('rotate_arrow');      
-        $('.a65chromecontent').slideToggle(300);
-        $('html, body').animate({ scrollTop: $(this).offset().top }, 'slow');
+      if($('#arrow_link_1').hasClass('rotate_arrow')) $('#arrow_link_1').removeClass('rotate_arrow');
+      else $('#arrow_link_1').addClass('rotate_arrow');      
+      $('.a65chromecontent').slideToggle(300);
+      $('html, body').animate({ scrollTop: $(this).offset().top }, 'slow');
     });
 
     $('select[id="pay_type"]').on('change',function(){
       var now_val = $(this).val();
        $('option',$(this)).each(function(){
-          var old_val = $(this).attr('value');
-          if(now_val != old_val){
-            $('#PaymentsAndCredits .new_record .pay_'+ old_val +'').css('display','none');
-          }
-          $('#PaymentsAndCredits .new_record .pay_'+ now_val +'').css('display','block');
+        var old_val = $(this).attr('value');
+        if(now_val != old_val){
+          $('#PaymentsAndCredits .new_record .pay_'+ old_val +'').css('display','none');
+        }
+        $('#PaymentsAndCredits .new_record .pay_'+ now_val +'').css('display','block');
        });
     });
        
@@ -1054,22 +1057,41 @@ $('input[name=\'product\']').autocomplete({
           return false;
         }
       }     
-     console.log($('#form_payment_newm').serialize());
+
       $.ajax({
         url: 'index.php?route=sale/order_volusion/addOrderPayment&token=<?php echo $token; ?>',
         type: 'POST',
         data: $('#form_payment_new').serialize()+'&order_id=<?php echo $order_id; ?>',
+        dataType: 'json',
         success: function(html) {
-          console.log(html);
-          $('.title').html(html);
-
+          $('#order_payment').html(html.orderHtml);
+          var pay_type = $('#pay_type').val();          
+          $('#form_payment_new')[0].reset();
+          $('#pay_type').val(pay_type); 
+          $('#sel_credit_card').html(html.savedCcHtml);
         },
         error: function(xhr,j,i) { console.log(xhr,j,i);
-          //$('#please_wait').hide();
+          alert(i);
+        }
+      });      
+    }); 
+ 
+    $('.a65chromecontent').on('click','.remove_payment_record',function(e){
+      var remove_btn = $(this);
+      if(!confirm("Are you sure?")) return false;
+
+      $.ajax({
+        url: 'index.php?route=sale/order_volusion/delOrderPayment&token=<?php echo $token; ?>',
+        type: 'POST',
+        data: {'order_payment_id': $(this).attr('data-role')},
+        success: function(res) {
+          remove_btn.parent().parent().next().css('display','none');
+          remove_btn.parent().parent().css('display','none');
+        },
+        error: function(res,j,i) { console.log(res,j,i);
           alert(i);
         }
       });
-
     });
   });
 </script>

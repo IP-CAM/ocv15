@@ -465,7 +465,7 @@ class ControllerSaleOrderVolusion extends Controller {
 			'common/header',
 			'common/footer'
 		);
-		
+		/*order_volusion_list*/ 
 		$this->response->setOutput($this->render());
 	}
 
@@ -1042,7 +1042,8 @@ class ControllerSaleOrderVolusion extends Controller {
 			'common/header',
 			'common/footer'
 		);
-
+		$this->data['accordion_payments'] = $this->getOrderPaymentsHtml($this->request->get['order_id']); /*Accordion payments-tab*/
+		$this->data['savedCcHtml'] = $this->savedCcHtml($this->request->get['order_id']);
 		$this->response->setOutput($this->render());
 	}
 
@@ -1382,6 +1383,30 @@ class ControllerSaleOrderVolusion extends Controller {
 		return $return_data;
 	}
 
+	private function savedCcHtml($order_id) {
+		$cards = $this->model_sale_order_volusion->getSavedCards($order_id, 'credit_card');
+		
+		$payment_types = array(
+			'credit_card' => 'Credit Card',
+			'paypal'	=> 'Paypal',
+			'check'		=> 'Check',
+			'cash'		=> 'Cash',
+			'wire'		=> 'Wire Transfer',
+			'bank'		=> 'Bank Deposit',
+			'other'		=> 'Other'
+		);
+		$card_types = array('3'=>'Amex', '4'=>'Visa', '5' =>'MasterCard', '6'=>'Discover');
+		
+		$res_html = "<option value=''>Select</option>";
+		foreach($cards as $card) {
+			$value = base64_decode($card['cc_number']);
+			$value.= ",".$card['cc_type'].",".$card['cc_name'].",".str_replace("-",",",$card['cc_exp_month_year']).",".base64_decode($card['cc_cvv']);
+			$res_html .= "<option value='{$value}'>{$card_types[$card['cc_type']]} {$card['pay_details']}</option>";
+		}
+		
+		return $res_html;
+	}
+
 	private function getOrderPaymentsHtml($order_id) {
 		$payment_records = $this->model_sale_order_volusion->getOrderPayments($order_id);
 		$payment_records_html = "";
@@ -1456,7 +1481,7 @@ class ControllerSaleOrderVolusion extends Controller {
 			}
 			
 			$payment_records_html .= "
-				<td align='center'><a href='javascript:void(0);' onclick='delPaymentRecord({$payment['order_payment_id']});' class='remove_payment_record'>&nbsp;</a></td>
+				<td align='center'><a href='javascript:void(0);' data-role={$payment['order_payment_id']} class='remove_payment_record'>&nbsp;</a></td>
 			</tr>";
 			
 			switch($payment['payment_method']) {
@@ -1580,10 +1605,21 @@ class ControllerSaleOrderVolusion extends Controller {
 	public function addOrderPayment(){	
 		$post = $this->request->post;
 		$this->load->model('sale/order_volusion');
-		$this->model_sale_order_volusion->addOrderPayment($post);
-		$payment_log = $this->getOrderPaymentsHtml($post['order_id']);		
+		$saved_card = $this->model_sale_order_volusion->addOrderPayment($post);
+		$payment_log = array('orderHtml'=>"", 'savedCcHtml'=>"",);
+		$payment_log['orderHtml'] = $this->getOrderPaymentsHtml($post['order_id']);	
+		
+		if (isset($post['pay_cc_save'])) $payment_log['savedCcHtml'] = $this->savedCcHtml($post['order_id']);
+		
 
-		$this->response->setOutPut($payment_log);
+		$this->response->setOutPut(json_encode($payment_log));
+	}
+
+	public function delOrderPayment(){
+		$order_payment_id = $this->request->post['order_payment_id'];
+		$this->load->model('sale/order_volusion');
+		$this->model_sale_order_volusion->delOrderPayment($order_payment_id);
+		$this->response->setOutPut('success');
 	}
 }
 ?>
