@@ -1,0 +1,55 @@
+<modification>
+	<id>Amazon Module</id>
+	<version>1.0.0</version>
+	<vqmver>2.6.1</vqmver>
+	<author>jasonjiang</author>
+	
+	<file name="admin/controller/common/header.php">
+		<operation>
+			<search position="before"><![CDATA[
+				$this->data['text_order'] = $this->language->get('text_order');
+			]]></search>
+			<add><![CDATA[
+				$this->data['text_order_volusion'] = $this->language->get('text_order_volusion');
+			]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+				$this->data['order'] = $this->url->link('sale/order', 'token=' . $this->session->data['token'], 'SSL');
+			]]></search>
+			<add><![CDATA[
+				$this->data['order_volusion'] = $this->url->link('sale/order_volusion', 'token=' . $this->session->data['token'], 'SSL');
+			]]></add>
+		</operation>
+	</file>
+	
+	<file name="admin/language/*/common/header.php">
+		<operation error="skip">
+			<search position="after"><![CDATA[
+				// Text
+			]]></search>
+			<add><![CDATA[
+				$_['text_order_volusion']                 = 'Volusion Order Manager';
+			]]></add>
+		</operation>
+	</file>
+	
+	<file name="admin/view/template/common/header.tpl">
+		<operation error="skip">
+			<search position="replace"><![CDATA[
+				<script type="text/javascript" src="view/javascript/jquery/jquery-1.6.1.min.js"></script>
+			]]></search>
+			<add><![CDATA[
+				<script type="text/javascript" src="view/javascript/jquery/jquery-1.7.1.min.js"></script>
+			]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				<li><a href="<?php echo $order; ?>"><?php echo $text_order; ?></a></li>
+			]]></search>
+			<add><![CDATA[
+				<li><a href="<?php echo $order_volusion; ?>"><?php echo $text_order_volusion; ?></a></li>
+			]]></add>
+		</operation>
+	</file>
+</modification>

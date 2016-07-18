@@ -1,0 +1,27 @@
+---------- Date: 2016-06-29 15:46:44 ~ IP : 127.0.0.1 ----------
+REQUEST URI : /ocv15/admin/index.php?route=catalog/product/update&amp;token=d8b829b86041e4fa66d482ecda754639&amp;product_id=42
+MOD DETAILS:
+   modFile   : E:\xampp\htdocs\ocv15\vqmod/xml/amazon_module.xml
+   id        : Amazon Module
+   version   : 1.0.0
+   vqmver    : 2.6.1
+   author    : jasonjiang
+
+File Name    : admin/view/template/catalog/product_form.tpl(0)
+VQModObject::applyMod - SEARCH NOT FOUND (ABORTING MOD): <tr><td><?php echo $entry_sku; ?></td><td><input type="text" name="sku" value="<?php echo $sku; ?>" /></td></tr>
+
+----------------------------------------------------------------------
+
+
+---------- Date: 2016-06-29 20:19:28 ~ IP : 127.0.0.1 ----------
+REQUEST URI : /ocv15/
+VQMod::_parseMods - INVALID XML FILE: : StartTag: invalid element name in file:/E:/xampp/htdocs/ocv15/vqmod/xml/amazon_module.xml, line: 149
+----------------------------------------------------------------------
+
+
+---------- Date: 2016-06-29 20:21:30 ~ IP : 127.0.0.1 ----------
+REQUEST URI : /ocv15/index.php?route=product/product&amp;product_id=43
+VQMod::_parseMods - INVALID XML FILE: : StartTag: invalid element name in file:/E:/xampp/htdocs/ocv15/vqmod/xml/amazon_module.xml, line: 149
+----------------------------------------------------------------------
+
+
