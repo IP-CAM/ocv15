@@ -5009,6 +5009,9 @@ textarea[name="pay_note"]{
     font-size: 12px;
     padding: 8px 15px;
 }
-#payment_log_table td div span{
+#order_payment td div span{
     margin: 0 15px;
+}
+#order_payment .note div label {
+	font-weight: 700;
 }
