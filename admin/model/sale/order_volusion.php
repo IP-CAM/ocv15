@@ -26,6 +26,46 @@ class ModelSaleOrderVolusion extends Model {
 		if (!$exists) {$this->db->query("ALTER TABLE " . DB_PREFIX . "customer ADD COLUMN `comment` text NULL;");}
 	}
 
+	public function addPaymentTable(){
+		$sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "order_payment` (
+				  `order_payment_id` int(11) NOT NULL AUTO_INCREMENT,
+				  `order_id` int(11) NOT NULL,
+				  `payment_method` varchar(16) NOT NULL,
+				  `auth_code` varchar(128) DEFAULT NULL,
+				  `trans_id` varchar(128) DEFAULT NULL,
+				  `pay_option` varchar(20) NOT NULL DEFAULT 'received',
+				  `cc_type` varchar(16) DEFAULT NULL,
+				  `cc_number` varchar(64) DEFAULT NULL,
+				  `cc_name` varchar(32) DEFAULT NULL,
+				  `cc_exp_month_year` varchar(7) DEFAULT NULL,
+				  `cc_cvv` varchar(64) DEFAULT NULL,
+				  `payer_paypal_email` varchar(128) DEFAULT NULL,
+				  `check_number` varchar(64) DEFAULT NULL,
+				  `check_received_date` datetime DEFAULT NULL,
+				  `check_deposit_date` datetime DEFAULT NULL,
+				  `check_refund_date` datetime DEFAULT NULL,
+				  `check_deposit_account` varchar(128) DEFAULT NULL,
+				  `cash_received_date` datetime DEFAULT NULL,
+				  `cash_deposit_date` datetime DEFAULT NULL,
+				  `cash_refund_date` datetime DEFAULT NULL,
+				  `cash_deposit_account` varchar(128) CHARACTER SET utf16 DEFAULT NULL,
+				  `wire_transfer_date` datetime DEFAULT NULL,
+				  `bank_deposit_date` datetime DEFAULT NULL,
+				  `bank_deposit_account` varchar(128) DEFAULT NULL,
+				  `other_payment_type_name` varchar(64) DEFAULT NULL,
+				  `note` text,
+				  `pay_amount` decimal(10,2) NOT NULL,
+				  `pay_details` varchar(256) DEFAULT NULL,
+				  `chk_not_balance` tinyint(1) NOT NULL DEFAULT '0',
+				  `save_credit_card` tinyint(1) NOT NULL DEFAULT '0',
+				  `created` datetime NOT NULL,
+				  KEY `order_payment_id` (`order_payment_id`)
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Payment Logs Records';
+		";
+
+		$this->db->query($sql);
+	}
+
 	public function completeOrder($order_id, $date_shipped) {
 		$this->db->query("UPDATE `" . DB_PREFIX . "order` SET date_shipped = '" . $date_shipped . "', order_status_id = '3' WHERE order_id = '" . (int)$order_id . "'");
 	}
@@ -847,6 +887,91 @@ class ModelSaleOrderVolusion extends Model {
 		$query = $this->db->query("SELECT DISTINCT email FROM `" . DB_PREFIX . "order` o LEFT JOIN " . DB_PREFIX . "order_product op ON (o.order_id = op.order_id) WHERE (" . implode(" OR ", $implode) . ") AND o.order_status_id <> '0'");
 
 		return $query->row['total'];
+	}
+
+	public function addOrderPayment($payment){
+		$query = "INSERT INTO " . DB_PREFIX . "order_payment SET order_id='{$payment['order_id']}', payment_method='{$payment['pay_type']}', note='".$this->db->escape($payment['pay_note'])."', pay_amount='{$payment['pay_amount']}', chk_not_balance='".(isset($payment['chk_not_balance']) ? 1:0)."', created='".date('Y-m-d H:i:s')."'";
+		switch($payment['pay_type']) {
+			case 'credit_card':
+				$pay_detail = substr($payment['pay_cc_number'], -4);
+				for($i = 0; $i < strlen($payment['pay_cc_number'])-4 ; $i++) {
+					$pay_detail = "*".$pay_detail;
+				}
+				
+				$pay_cc_save = isset($payment['pay_cc_save']) ? $payment['pay_cc_save']:0;
+				$query .= ", pay_option='{$payment['pay_option']}', cc_type='{$payment['pay_cc_type']}', cc_number='".base64_encode($payment['pay_cc_number'])."', cc_name='{$payment['pay_cc_name']}', cc_exp_month_year='".$payment['pay_exp_month']."-".$payment['pay_exp_year']."', cc_cvv='".base64_encode($payment['pay_cc_cvv'])."', pay_details='{$pay_detail}', save_credit_card='{$pay_cc_save}'";
+				break;
+			case 'paypal':
+				$query .= ", pay_option='{$payment['pay_option']}', payer_paypal_email='{$payment['pay_paypal_email']}'";
+				break;
+			case 'check':
+				$pay_detail = substr($payment['pay_check_number'], -4);
+				for($i = 0; $i < strlen($payment['pay_check_number'])-4 ; $i++) {
+					$pay_detail = "*".$pay_detail;
+				}
+				
+				if($payment['pay_check_date_type'] == "received") { // Received
+					$received_date = explode("-", $payment['pay_check_date'], 3);
+					$r_date = $received_date[2]."-".$received_date[0]."-".$received_date[1]." 00:00:00";
+					$query .= ", pay_option='received', check_number='".base64_encode($payment['pay_check_number'])."', check_received_date='{$r_date}', check_deposit_account='".base64_encode($payment['pay_check_deposit_account'])."', pay_details='{$pay_detail}'";
+				}
+				elseif($payment['pay_check_date_type'] == "deposited") { // Deposited
+					$deposit_date = explode("-", $payment['pay_check_date'], 3);
+					$d_date = $deposit_date[2]."-".$deposit_date[0]."-".$deposit_date[1]." 00:00:00";
+					$query .= ", pay_option='deposited', check_number='".base64_encode($payment['pay_check_number'])."', check_deposit_date='{$d_date}', check_deposit_account='".base64_encode($payment['pay_check_deposit_account'])."', pay_details='{$pay_detail}'";
+				}
+				else { // Refunded
+					$refund_date = explode("-", $payment['pay_check_date'], 3);
+					$r_date = $refund_date[2]."-".$refund_date[0]."-".$refund_date[1]." 00:00:00";
+					$query .= ", pay_option='refunded', check_number='".base64_encode($payment['pay_check_number'])."', check_refund_date='{$r_date}', check_deposit_account='".base64_encode($payment['pay_check_deposit_account'])."', pay_details='{$pay_detail}'";
+				}
+				
+				break;
+			case 'cash':
+				if($payment['pay_cash_date_type'] == "received") {
+					$received_date = explode("-", $payment['pay_cash_date'], 3);
+					$r_date = $received_date[2]."-".$received_date[0]."-".$received_date[1]." 00:00:00";
+					$query .= ", pay_option='received', cash_received_date='{$r_date}', cash_deposit_account='".base64_encode($payment['pay_cash_deposit_account'])."'";
+				}
+				elseif($payment['pay_cash_date_type'] == "deposited") {
+					$deposit_date = explode("-", $payment['pay_cash_date'], 3);
+					$d_date = $deposit_date[2]."-".$deposit_date[0]."-".$deposit_date[1]." 00:00:00";
+					$query .= ", pay_option='deposited', cash_deposit_date='{$d_date}', cash_deposit_account='".base64_encode($payment['pay_cash_deposit_account'])."'";
+				}
+				else { // Refunded
+					$refund_date = explode("-", $payment['pay_cash_date'], 3);
+					$r_date = $refund_date[2]."-".$refund_date[0]."-".$refund_date[1]." 00:00:00";
+					$query .= ", pay_option='refunded', cash_refund_date='{$r_date}', cash_deposit_account='".base64_encode($payment['pay_cash_deposit_account'])."'";
+				}
+				
+				break;
+			case 'wire':
+				$transfer_date = explode("-", $payment['pay_wire_transfer_date'], 3);
+				$t_date = $transfer_date[2]."-".$transfer_date[0]."-".$transfer_date[1]." 00:00:00";
+				
+				$query .= ", pay_option='{$payment['pay_option']}', wire_transfer_date='{$t_date}'";
+				break;
+			case 'bank':
+				$deposit_date = explode("-", $payment['pay_bank_deposit_date'], 3);
+				$d_date = $deposit_date[2]."-".$deposit_date[0]."-".$deposit_date[1]." 00:00:00";
+				
+				$query .= ", pay_option='{$payment['pay_option']}', bank_deposit_date='{$d_date}', bank_deposit_account='".base64_encode($payment['pay_bank_deposit_account'])."'";
+				break;
+			case 'other': 
+				$query .= ", pay_option='{$payment['pay_option']}', other_payment_type_name='{$payment['pay_other_payment_type_name']}'";
+				break;
+			default:
+				break;
+		}
+		
+		$this->db->query($query);
+		
+		return true;
+	}
+
+	public function getOrderPayments($order_id) {
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_payment WHERE order_id='{$order_id}' ORDER BY created ASC");
+		return $query->rows;
 	}
 }
 ?>

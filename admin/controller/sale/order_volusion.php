@@ -465,7 +465,7 @@ class ControllerSaleOrderVolusion extends Controller {
 			'common/header',
 			'common/footer'
 		);
-
+		
 		$this->response->setOutput($this->render());
 	}
 
@@ -533,6 +533,7 @@ class ControllerSaleOrderVolusion extends Controller {
 
 		/* This is to add necessary columns to order, customer tables */
 		$this->model_sale_order_volusion->addColumns();
+		$this->model_sale_order_volusion->addPaymentTable();
 		/* This is to add necessary columns to order, customer tables */
 
 		if (isset($this->request->get['order_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
@@ -1212,6 +1213,357 @@ class ControllerSaleOrderVolusion extends Controller {
 		$this->response->setOutput(json_encode($json));
 	}
 
+	private function getTotals() {
+		$this->session->data['catalog_model'] = 1;
+		$this->load->model('setting/extension');
+		$return_data = array();
+		$total_data = array();			
+		$total = 0;
+		$taxes = $this->cart->getTaxes();
+		$sort_order = array(); 
+		$results = $this->model_setting_extension->getExtensions('total'); //no need
+		if (isset($this->session->data['optional_fees'])) {
+			$s = 900;
+			foreach ($this->session->data['optional_fees'] as $optional_fee) {
+				$results[] = array(
+					'extension_id'	=> $s,
+					'type'			=> 'total',
+					'code'			=> $optional_fee['code']
+				);
+				$s++;
+			}
+		}
+		foreach ($results as $key => $value) {
+			$found = false;
+			if (isset($this->session->data['optional_fees'])) {
+				foreach ($this->session->data['optional_fees'] as $optional_fee) {
+					if ($value['code'] == $optional_fee['code']) {
+						$sort_order[$key] = $optional_fee['sort_order'];
+						$found = true;
+					}
+				}
+			}
+			if (!$found) {
+				$sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
+			}
+		}
+		array_multisort($sort_order, SORT_ASC, $results);
+		
+		foreach ($results as $result) {
+			$found = false;
+			if (isset($this->session->data['optional_fees'])) {
+				foreach ($this->session->data['optional_fees'] as $optional_fee) {
+					if ($result['code'] == $optional_fee['code']) {
+						$sub_total = $this->cart->getSubTotal();
+						if ($optional_fee['type'] == "p-amt" || $optional_fee['type'] == "p-per") {
+							if ($optional_fee['type'] == "p-amt") {
+								$amount = $optional_fee['value'];
+							} elseif ($optional_fee['type'] == "p-per") {
+								$amount = ($sub_total * $optional_fee['value']) / 100;
+							}
+							if ($optional_fee['taxed'] && $optional_fee['tax_class_id'] && ($optional_fee['type'] == 'p-amt' || $optional_fee['type'] == 'p-per')) {
+								if (version_compare(VERSION, '1.5.1.2', '>')) {
+									$tax_rates = $this->tax->getRates($amount, $optional_fee['tax_class_id']);
+									foreach ($tax_rates as $tax_rate) {
+										if (!isset($taxes[$tax_rate['tax_rate_id']])) {
+											$taxes[$tax_rate['tax_rate_id']] = $tax_rate['amount'];
+										} else {
+											$taxes[$tax_rate['tax_rate_id']] += $tax_rate['amount'];
+										}
+									}
+								} else {
+									if (!isset($taxes[$optional_fee['tax_class_id']])) {
+										$taxes[$optional_fee['tax_class_id']] = $amount / 100 * $this->tax->getRate($optional_fee['tax_class_id']);
+									} else {
+										$taxes[$optional_fee['tax_class_id']] += $amount / 100 * $this->tax->getRate($optional_fee['tax_class_id']);
+									}
+								}
+							}
+						} else {
+							$amount = 0;
+							if ($optional_fee['type'] == "m-amt") {
+								$discount_min = min($optional_fee['value'], $sub_total);
+							}
+							foreach ($this->cart->getProducts() as $product) {
+								$discount = 0;
+								if ($optional_fee['type'] == "m-amt") {
+									$discount = $discount_min * ($product['total'] / $sub_total);
+								} elseif ($optional_fee['type'] == "m-per") {
+									$discount = ($product['total'] * $optional_fee['value']) / 100;
+								}
+								if ($product['tax_class_id'] && $optional_fee['pre_tax'] == 1) {
+									$tax_rates = $this->tax->getRates($product['total'] - ($product['total'] - $discount), $product['tax_class_id']);
+									foreach ($tax_rates as $tax_rate) {
+										if ($tax_rate['type'] == 'P') {
+											$taxes[$tax_rate['tax_rate_id']] -= $tax_rate['amount'];
+										}
+									}
+								}
+								$amount -= $discount;
+							}
+							if ($optional_fee['shipping'] && isset($this->session->data['shipping_method'])) {
+								$discount = 0;
+								foreach ($this->session->data['shipping_methods'] as $shipping_method) {
+									foreach ($shipping_method['quote'] as $quote) {
+										if ($quote['code'] == $this->session->data['shipping_method']['code']) {
+											if ($optional_fee['type'] == "m-amt") {
+												if ($quote['cost'] >= $optional_fee['value']) {
+													$discount = $optional_fee['value'];
+												} else {
+													$discount = $quote['cost'];
+												}
+											} elseif ($optional_fee['type'] == "m-per") {
+												$discount = ($quote['cost'] * $optional_fee['value']) / 100;
+											}
+											if ($this->session->data['shipping_method']['tax_class_id'] && $optional_fee['pre_tax'] == 1) {
+												foreach ($tax_rates as $tax_rate) {
+													if (version_compare(VERSION, '1.5.1.2', '>')) {
+														$tax_rates = $this->tax->getRates($quote['cost'] - ($quote['cost'] - $discount), $this->session->data['shipping_method']['tax_class_id']);
+														foreach ($tax_rates as $tax_rate) {
+															if (!isset($taxes[$tax_rate['tax_rate_id']])) {
+																$taxes[$tax_rate['tax_rate_id']] = $tax_rate['amount'];
+															} else {
+																$taxes[$tax_rate['tax_rate_id']] -= $tax_rate['amount'];
+															}
+														}
+													} else {
+														if (!isset($taxes[$this->session->data['shipping_method']['tax_class_id']])) {
+															$taxes[$this->session->data['shipping_method']['tax_class_id']] = $discount / 100 * $this->tax->getRate($this->session->data['shipping_method']['tax_class_id']);
+														} else {
+															$taxes[$this->session->data['shipping_method']['tax_class_id']] -= $discount / 100 * $this->tax->getRate($this->session->data['shipping_method']['tax_class_id']);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+								$amount -= $discount;
+							}
+						}
+						$total += $amount;
+						$text = $this->currency->format($amount);
+						$total_data[] = array(
+							'code'			=> $optional_fee['code'],
+							'title'			=> $optional_fee['title'],
+							'text'			=> $text,
+							'value'			=> $amount,
+							'sort_order'	=> $optional_fee['sort_order']
+						);
+						$found = true;
+					}
+				}
+			}
+			if (!$found) {
+				if ($this->config->get($result['code'] . '_status')) {
+					if (version_compare(VERSION, '1.5.2', '<') && $result['code'] != "tax") {
+						$this->language->load('oentrytotal/' . $result['code']);
+					} elseif (version_compare(VERSION, '1.5.1.3.1', '>')) {
+						$this->language->load('oentrytotal/' . $result['code']);
+					}
+					$this->load->model('total/' . $result['code']);
+					$this->{'model_total_' . $result['code']}->getTotal($total_data, $total, $taxes);
+				}
+			}
+			$sort_order = array(); 
+			foreach ($total_data as $key => $value) {
+				$sort_order[$key] = $value['sort_order'];
+			}
+			array_multisort($sort_order, SORT_ASC, $total_data);			
+		}
+		
+		
+		unset($this->session->data['catalog_model']);
+		$return_data = array(
+			'total_data'	=> $total_data,
+			'total'			=> $total,
+			'taxes'			=> $taxes
+		);
+		return $return_data;
+	}
+
+	private function getOrderPaymentsHtml($order_id) {
+		$payment_records = $this->model_sale_order_volusion->getOrderPayments($order_id);
+		$payment_records_html = "";
+		
+		$payment_types = array(
+			'credit_card' => 'Credit Card',
+			'paypal'	=> 'Paypal',
+			'check'		=> 'Check',
+			'cash'		=> 'Cash',
+			'wire'		=> 'Wire Transfer',
+			'bank'		=> 'Bank Deposit',
+			'other'		=> 'Other'
+		);
+		$card_types = array('3'=>'Amex', '4'=>'Visa', '5' =>'MasterCard', '6'=>'Discover');
+		
+		//$totals = $this->getTotals();
+		$balance_due = 0;//$totals['total'];
+		
+		foreach($payment_records as $payment) {
+			$payment_records_html .= "<tr>
+				<td>".date('n/j/Y g:i A', strtotime($payment['created']))."</td>";
+			
+			switch($payment['payment_method']) {
+				case 'credit_card': case 'paypal': case 'wire': case 'bank': case 'check': case 'cash':
+					$payment_records_html .= "<td>".$payment_types[$payment['payment_method']]." | ".($payment['pay_option']=='received' ? "<span style='color:#333;'>Received</span>":($payment['pay_option']=='deposited' ? "<span style='color:#33D;'>Deposited</span>":"<span style='color:#D33;'>Refunded</span>"))."</td>";
+					break;
+				case 'other': 
+					$payment_records_html .= "<td>".$payment['other_payment_type_name']." | ".($payment['pay_option']=='received' ? "<span style='color:#333;'>Received</span>":($payment['pay_option']=='deposited' ? "<span style='color:#33D;'>Deposited</span>":"<span style='color:#D33;'>Refunded</span>"))."</td>";
+					break;
+				default:
+					$payment_records_html .= "<td>".$payment_types[$payment['payment_method']]."</td>";
+					break;
+			}
+			
+			$payment_records_html .= "<td>".($payment['chk_not_balance'] == 0 ? "Yes":"No")."</td>";
+			
+			switch($payment['payment_method']) {
+				case 'paypal':
+					$payment_records_html .= "<td>{$payment['payer_paypal_email']}</td>";
+					break;
+				case 'credit_card':
+					$card_type = $card_types[$payment['cc_type']];
+					$payment_records_html .= "<td>{$card_type} {$payment['pay_details']}</td>";
+					break;
+				case 'check': 
+					$payment_records_html .= "<td>".base64_decode($payment['check_deposit_account'])."</td>";
+					break;
+				case 'cash': 
+					$payment_records_html .= "<td>".base64_decode($payment['cash_deposit_account'])."</td>";
+					break;
+				case 'bank': 
+					$payment_records_html .= "<td>".base64_decode($payment['bank_deposit_account'])."</td>";
+					break;
+				case 'wire': case 'other': default:
+					$payment_records_html .= "<td>".$payment['pay_details']."</td>";
+					break;
+			}
+			
+			$payment_records_html .= "<td>".$this->currency->format($payment['pay_amount'])."</td>";
+			
+			if($payment['chk_not_balance'] == 0) {
+				if($payment['pay_option'] == 'refunded') { // Refunded Money
+					$balance_due += $payment['pay_amount'];
+				}
+				else {
+					$balance_due -= $payment['pay_amount'];
+				}
+				
+				$payment_records_html .= "<td>".$this->currency->format($balance_due)."</td>";
+			} else {
+				$payment_records_html .= "<td>".$this->currency->format($balance_due)."</td>";
+			}
+			
+			$payment_records_html .= "
+				<td align='center'><a href='javascript:void(0);' onclick='delPaymentRecord({$payment['order_payment_id']});' class='remove_payment_record'>&nbsp;</a></td>
+			</tr>";
+			
+			switch($payment['payment_method']) {
+				case 'paypal':
+					$payment_records_html .= "<tr class='note'>
+						<td colspan='7'>
+						    <div>
+								<label>AuthCode:</label><span class='value'>{$payment['payer_paypal_email']}</span>
+								<label>TransID:</label><span class='value'>{$payment['trans_id']}</span>
+								<label>Note:</label><span class='value'>{$payment['note']}</span>
+						    </div>
+						</td>
+					</tr>";
+					break;
+				case 'credit_card':
+					$card_type = $card_types[$payment['cc_type']];
+					$payment_records_html .= "<tr class='note'>
+						<td colspan='7'>
+						    <div>
+								<label>Card #:</label><span class='value'>{$payment['pay_details']}</span>
+								<label>Card Type:</label><span class='value'>{$card_type}</span>
+								<label>Note:</label><span class='value'>{$payment['note']}</span>
+						    </div>
+						</td>
+					</tr>";
+					break;
+				case 'check':
+					if($payment['check_received_date']) {
+						$l_date = "Received Date";
+						$v_date = date('m/d/Y', strtotime($payment['check_received_date']));
+					}
+					elseif($payment['check_deposit_date']) {
+						$l_date = "Deposited Date";
+						$v_date = date('m/d/Y', strtotime($payment['check_deposit_date']));
+					}
+					else {
+						$l_date = "Refunded Date";
+						$v_date = date('m/d/Y', strtotime($payment['check_refund_date']));
+					}
+							
+					$payment_records_html .= "<tr class='note'>
+						<td colspan='7'>
+						    <div>
+								<label>Check #:</label><span class='value'>{$payment['pay_details']}</span>
+								<label>{$l_date}:</label><span class='value'>{$v_date}</span>
+								<label>Note:</label><span class='value'>{$payment['note']}</span>
+						    </div>
+						</td>
+					</tr>";
+					break;
+				case 'cash': 
+					if($payment['cash_received_date']) {
+						$l_date = "Received Date";
+						$v_date = date('m/d/Y', strtotime($payment['cash_received_date']));
+					}
+					elseif($payment['cash_deposit_date']) {
+						$l_date = "Deposited Date";
+						$v_date = date('m/d/Y', strtotime($payment['cash_deposit_date']));
+					}
+					else {
+						$l_date = "Refunded Date";
+						$v_date = date('m/d/Y', strtotime($payment['cash_refund_date']));
+					}
+							
+					$payment_records_html .= "<tr class='note'>
+						<td colspan='7'>
+						    <div>
+								<label>{$l_date}:</label><span class='value'>{$v_date}</span>
+								<label>Note:</label><span class='value'>{$payment['note']}</span>
+						    </div>
+						</td>
+					</tr>";
+					break;
+				case 'other': default:
+					$payment_records_html .= "<tr class='note'>
+						<td colspan='7'>
+						    <div>
+								<label>Note:</label><span class='value'>{$payment['note']}</span>
+						    </div>
+						</td>
+					</tr>";
+					break;
+				case 'wire':
+					$payment_records_html .= "<tr class='note'>
+						<td colspan='7'>
+						    <div>
+								<label>Transfer Date:</label><span class='value'>".date('m/d/Y', strtotime($payment['wire_transfer_date']))."</span>
+								<label>Note:</label><span class='value'>{$payment['note']}</span>
+						    </div>
+						</td>
+					</tr>";
+					break;
+				case 'bank':
+					$payment_records_html .= "<tr class='note'>
+						<td colspan='7'>
+						    <div>
+								<label>Deposited Date:</label><span class='value'>".date('m/d/Y', strtotime($payment['bank_deposit_date']))."</span>
+								<label>Note:</label><span class='value'>{$payment['note']}</span>
+						    </div>
+						</td>
+					</tr>";
+					break;
+			}
+		}
+		
+		return $payment_records_html;
+	}
 	public function complete_order() {
 		$this->load->model('sale/order_volusion');
 
@@ -1224,6 +1576,14 @@ class ControllerSaleOrderVolusion extends Controller {
 		$this->session->data['success'] = $this->language->get('text_success');
 		
 		$this->redirect($this->url->link('sale/order_volusion/update', 'token=' . $this->session->data['token'] . '&order_id=' . $order_id . $url, 'SSL'));
+	}
+	public function addOrderPayment(){	
+		$post = $this->request->post;
+		$this->load->model('sale/order_volusion');
+		$this->model_sale_order_volusion->addOrderPayment($post);
+		$payment_log = $this->getOrderPaymentsHtml($post['order_id']);		
+
+		$this->response->setOutPut($payment_log);
 	}
 }
 ?>

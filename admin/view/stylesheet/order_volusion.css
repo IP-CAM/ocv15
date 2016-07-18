@@ -686,6 +686,7 @@ input.checkbox, input.radio {
 input[type=checkbox], input[type=radio] {
     border: 0;
     box-shadow: none;
+    margin-right: 4px;
 }
 .clear {
     clear: both;
@@ -2258,7 +2259,6 @@ tr.overlaybuttonarea td {
 .v13-grid {
     border-radius: 4px;
     border: 1px solid #c7c5c5;
-    margin-top: 20px;
 }
 .v13-grid>form>table>tbody>tr, .v13-grid>form>table>tr, .v13-grid>table>tbody>tr, .v13-grid>table>tr {
     background-color: #f2f2f2;
@@ -4839,9 +4839,7 @@ hr.hrule-standard {
 .cell-paymentsandcredits {
     width: 450px;
 }
-.v13-grid {
-    margin: 20px 0 0;
-}
+
 table.tracking .cell-selectedshippingmethod {
     width: 300px;
     border-right: 1px solid #ccc;
@@ -4931,3 +4929,36 @@ table.table-customermanagement td {
 .inputArea .input {
     vertical-align: top;
 }
+.new_record{
+    border: 1px solid #EEE;
+    padding: 10px 0;
+    border-radius: 4px;
+}
+.one_row{    
+    padding: 6px 0px 6px 15px;
+}
+.one_row label{
+    display: inline-block;    
+    width: 140px;
+}
+.one_row select{
+    width: 182px;
+}
+#btn_pay_receive{
+    background-color: #f39546;
+    border: 1px solid #e55602;
+    text-shadow: 0 0 2px rgba(0, 0, 0, .4);
+    font-weight: 700;
+    border-radius: 4px;
+    color: #fff;
+    padding: 6px 20px 8px;
+    font-size: 15px
+}
+textarea[name="pay_note"]{
+    width: 255px !important;
+    margin-left: 4px !important;     
+}
+.accord{
+    display: none;
+}
+.one_row label em{color: red;}

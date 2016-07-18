@@ -430,574 +430,193 @@
           </td>
         </tr>
       </tbody>
-    </table>
-    <div class="a65chromepanel expanded" id="a65chromepanel_1">
+    </table>    
+  </form>
+  <div class="a65chromepanel" id="a65chromepanel_1"><!--to line 1000-->
       <div class="a65chromeheader" id="a65chromeheader_1">
         <span class="a65chromeheadertext">
-          <span class="arrow_link" id="arrow_link_1">
+          <span class="arrow_link rotate_arrow" id="arrow_link_1">
             <span class="v13-icon-downarrow"></span>
           </span>Payments
         </span>
       </div>
-      <div class="a65chromecontent" id="OrderDetails_detail_page_section___detail_page_section_1" style=""><!--line 1000-->
-      <table class="table-standard contenttable">
+      <div class="a65chromecontent" id="OrderDetails_detail_page_section___detail_page_section_1" style="">
+        <br>
         
-        <tbody><tr valign="top">
-          
+        <table class="table-standard contenttable">    
+          <tbody>
+            <tr valign="top">  
 
-        <td class="cell-paymentsandcredits">
-         <table width="100%" border="0">
-          <tbody><tr>
-          <td>
-           <span class="customer_title">Payments &amp; Credits</span>
-          </td>
-          </tr>
-          <tr>
-              <td>
-           <div class="contentareanoscrollstyle" id="PaymentsAndCredits">
+              <td class="cell-paymentsandcredits">  
+                <div class="contentareanoscrollstyle" id="PaymentsAndCredits"> 
 
-                  <div>
+                  <form name="form_payment_new" id="form_payment_new" action="" method="POST">
+                    <div class="new_record">
+                        <div class="one_row">
+                          <label for="pay_type">Payment Type <em>*</em></label>
+                          <select name="pay_type" id="pay_type">
+                            <option value="credit_card">Credit Card</option>
+                            <option value="paypal">Paypal</option>
+                            <option value="check">Check</option>
+                            <option value="cash">Cash</option>
+                            <option value="wire">Wire Transfer</option>
+                            <option value="bank">Bank Deposit</option>
+                            <option value="other">Other</option>
+                          </select>
+                        </div>
+                        <div class="one_row">
+                          <label for="pay_amount" style="width:140px;">Pay Amount <em>*</em></label>
+                          <input type="text" name="pay_amount" id="pay_amount" />
+                            </div>
+                            <div class="one_row pay_credit_card">
+                          <label for="sel_credit_card">Use a Saved Card</label>
+                          <select name="sel_credit_card" id="sel_credit_card">
+                            <option value="">Select</option>
+                          </select>
+                        </div>
+                        <div class="one_row pay_credit_card">
+                          <label for="pay_cc_number">Card Number <em>*</em></label>
+                          <input type="text" name="pay_cc_number" id="pay_cc_number" />
+                            </div>
+                            <div class="one_row pay_credit_card">
+                          <label for="pay_cc_type">Credit Card Type <em>*</em></label>
+                          <select name="pay_cc_type" id="pay_cc_type" style="width:120px;">
+                            <option value="4">Visa</option>
+                            <option value="5">MasterCard</option>
+                            <option value="3">Amex</option>
+                            <option value="6">Discover</option>
+                          </select>
+                        </div>
+                        <div class="one_row pay_credit_card">
+                          <label for="pay_cc_name">Name on Card <em>*</em></label>
+                          <input type="text" name="pay_cc_name" id="pay_cc_name" />
+                        </div>
+                        <div class="one_row pay_credit_card">
+                          <label for="pay_exp_month">Expiration Date <em>*</em></label>
+                          <select name="pay_exp_month" id="pay_exp_month" style="width:75px;">
+                            <option value="">Month</option>
+                            <?php for($i=1;$i<=12;$i++) { ?>
+                            <option value="<?php echo sprintf('%02d', $i)?>"><?php echo sprintf('%02d', $i)?></option>
+                            <?php } ?>
+                          </select>
+                          &nbsp;/&nbsp;
+                          <select name="pay_exp_year" id="pay_exp_year" style="width:85px;">
+                            <option value="">Year</option>
+                            <?php for($i=2013;$i<=2024;$i++) { ?>
+                            <option value="<?php echo $i?>"><?php echo $i?></option>
+                            <?php } ?>
+                          </select>
+                        </div>
+                        <div class="one_row pay_credit_card">
+                          <label for="pay_cc_cvv">Security Code <em>*</em></label>
+                          <input type="text" name="pay_cc_cvv" id="pay_cc_cvv"/>
+                        </div>    
 
-      <table class="table-standard" align="center" cellpadding="5" style="">
-        <thead>
-          <tr valign="middle">
-            <td>
-              
-              </td>
-              <td>
-              </td>
-            </tr>
-            <tr valign="middle">
-              <td colspan="2" nowrap="" align="left">
-                Current Method&nbsp;<b>(PayPal)</b>
+                        <div class="one_row pay_paypal" style="display:none">
+                          <label for="pay_paypal_email">Paypal Email <em>*</em></label>
+                          <input type="text" name="pay_paypal_email" id="pay_paypal_email" />
+                        </div>
+                        <div class="one_row pay_check" style="display:none">
+                          <label for="pay_check_number">Check#</label>
+                          <input type="text" name="pay_check_number" id="pay_check_number" />
+                        </div>
+                        <div class="one_row pay_check" style="display:none">
+                          <label for="pay_check_date">Date <em>*</em></label>
+                          <input type="text" name="pay_check_date" id="pay_check_date"/>
+                        </div>
+                        <div class="one_row pay_check" style="display:none">
+                          <label>&nbsp;</label>
+                          <input type="radio" name="pay_check_date_type" value="received" checked />Received&emsp;
+                          <input type="radio" name="pay_check_date_type" value="deposited"/>Deposited&emsp;
+                          <input type="radio" name="pay_check_date_type" value="refunded"/>Refunded&emsp;
+                        </div>
+                        <div class="one_row pay_check" style="display:none">
+                          <label for="pay_check_deposit_account">Deposit Account</label>
+                          <input type="text" name="pay_check_deposit_account" id="pay_check_deposit_account" />
+                        </div>
+                        <div class="one_row pay_cash" style="display:none">
+                          <label for="pay_cash_date">Date <em>*</em></label>
+                          <input type="text" name="pay_cash_date" id="pay_cash_date"/>
+                        </div>
+                        <div class="one_row pay_cash" style="display:none">
+                          <label>&nbsp;</label>
+                          <input type="radio" name="pay_cash_date_type" value="received" checked />Received&emsp;
+                          <input type="radio" name="pay_cash_date_type" value="deposited"/>Deposited&emsp;
+                          <input type="radio" name="pay_cash_date_type" value="refunded"/>Refunded&emsp;
+                        </div>
+                        <div class="one_row pay_cash" style="display:none">
+                          <label for="pay_cash_deposit_account">Deposit Account</label>
+                          <input type="text" name="pay_cash_deposit_account" id="pay_cash_deposit_account" />
+                        </div>
+                        <div class="one_row pay_wire" style="display:none">
+                          <label for="pay_wire_transfer_date">Transfer Date<em>*</em></label>
+                          <input type="text" name="pay_wire_transfer_date" id="pay_wire_transfer_date"/>
+                        </div>
+                        <div class="one_row pay_bank" style="display:none">
+                          <label for="pay_bank_deposit_date">Deposit Date<em>*</em></label>
+                          <input type="text" name="pay_bank_deposit_date" id="pay_bank_deposit_date"/>
+                        </div>
+                        <div class="one_row pay_bank" style="display:none">
+                          <label for="pay_bank_deposit_account">Deposit Account</label>
+                          <input type="text" name="pay_bank_deposit_account" id="pay_bank_deposit_account" />
+                        </div>
+                        <div class="one_row pay_other" style="display:none">
+                          <label for="pay_other_payment_type_name">Payment Type Name</label>
+                          <input type="text" name="pay_other_payment_type_name" id="pay_other_payment_type_name" />
+                        </div>
 
-                                CVV2:
-                                <input type="text" onchange="ShowSave()" onkeyup="ShowSave()" name="CVV2_Payment" style="width: 30px;" maxlength="4" id="CVV2_Payment">
-                                
-                              </td>
-                            </tr>
-                            
-                            <tr valign="middle">
-                              <td colspan="2" style="white-space: nowrap; text-align: left">
-                                <div>
-                                  <div style="float: left; padding-top: 2px;">
-                                    <select name="Collect_Payment_TransType">
-                                      <option value="DEBIT">Debit</option>
-                                      
-                                    </select>&nbsp;
-                                    <input type="text" name="Collect_Payment_Amount" value="0.00" style="width: 75px;">
-                                  </div>
-                                  
-                                  <div style="float: left; margin-left: 10px; margin-top: 2px;">
-                                    <a onclick="PerformImpersonatedClickEvent('btnCollectPayment');" href="javascript:void(0);" class="v13-button-primary">Receive</a>
-                                  </div>
-                                  
-                                </div>
-                                <div style="display: none">
-                                  <font><font><input type="submit" id="btnCollectPayment" name="btnCollectPayment" value="Receive"></font></font></div>
-                              </td>
-                            </tr>
-                            
-                            <tr>
-                              <td colspan="2" nowrap="" align="left" style="padding-bottom: 15px;">
-                              </td>
-                            </tr>
-                            <tr valign="middle">
-                              <td colspan="2" nowrap="" align="left">
-                                Change Payment Type
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="2" nowrap="" align="left" style="padding-bottom: 15px;">
-                                <select onkeyup="ShowSave()" id="PaymentMethodType" name="PaymentMethodType" onchange="HandlePaymentMethods(this)">
-                                  <option selected="" value=""><font><font>Select</font></font></option>
-                                  <option value="5">Credit Card</option><option value="18">PayPal</option><option value="2">Check by Mail</option><option value="14">Wire Transfer</option><option value="16">Money Order</option><option value="29">QuickSpark Financing</option><option value="28">Synchrony Account</option>
-                                  <option value="">-------------------------------</option>
-                                  <option value="-1">Offline Payment Record</option>
-                                  <option value="-2">Store Credit / Gift Certificate</option>
-                                </select>
-                                
-                                <input type="hidden" id="PCIaaS_CardId_ForReceiveButton" name="PCIaaS_CardId_ForReceiveButton" value="0eef523a849a451fa3d7f480f7c5d42f">
-                                <input type="hidden" id="PCIaaS_CardId" name="PCIaaS_CardId" value="">
-                                
-                              </td>
-                            </tr>
-                          </thead>
-                          
-                          <tbody id="ShowFields_CreditCard" style="display: none;">
-                            <tr>
-                              <td colspan="8">
-                                <table>
-                                  <tbody><tr>
-                                    <td colspan="2">
-                                      
-                                      <table cellpadding="0" cellspacing="0" border="0" style="margin: 0;">
-                                        <tbody><tr>
-                                          <td width="39%" nowrap="nowrap" align="right">
-                                          </td>
-                                          <td width="61%">
-                                            <table width="100%" cellpadding="5" cellspacing="1" border="0" class="colors_lines_light">
-                                              <tbody><tr>
-                                                <td class="colors_backgroundneutral">
-                                                  <font style="font-weight: bold; line-height: 20px;">Saved Payment Methods:</font>
-                                                  <br>
-                                                  <select name="CCards" onchange="Choose_My_Saved_CCards(this.selectedIndex);savedCcDisabled(this.value, true)" style="background-color:#EEEEEE">
-      <option></option>
-      <option value="19282" class="v-saved-cc">Visa ************8108</option>
-      <option value="19407" class="v-saved-cc"><font><font>PayPal</font></font></option>
-      </select>
-                                                </td>
-                                              </tr>
-                                            </tbody></table>
-                                            <br>
-                                          </td>
-                                        </tr>
-                                      </tbody></table>
-                                    </td>
-                                  </tr>
-                                </tbody></table>
-                                <table id="CC_paymentinfo" cellpadding="5">
-                                  <tbody><tr>
-                                    <!--<td colspan="2"><table width=100% cellpadding=1 cellspacing=0 border=1 align="center"><tr>-->
-                                    <td width="150" nowrap="" align="right">
-                                      <font class="fieldname_asterisk">*</font><font class="fieldname_required">Credit / Debit Card Type&nbsp;</font>
-                                    </td>
-                                    <td>
-                                      <select name="CreditCardType" id="CreditCardType">
-      <option value="5">Visa</option>
-      <option value="6">MasterCard</option>
-      <option value="7">American Express</option>
-      <option value="8">Discover</option>
-      </select>
 
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td width="150" nowrap="" align="right">
-                                      <font class="fieldname_asterisk">*</font><font class="fieldname_required">Credit / Debit Card Number&nbsp;</font>
-                                    </td>
-                                    <td>
-                                      
-                                      <input id="CreditCardNumber" name="CreditCardNumber" style="width: 200px;" maxlength="20" autocomplete="off">
-                                      
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td width="150" nowrap="" align="right">
-                                      <font class="fieldname_asterisk">*</font><font class="fieldname_required">Name on Card&nbsp;</font>
-                                    </td>
-                                    <td>
-                                      <input id="CardHoldersName" name="CardHoldersName" value="" style="width: 200px;" maxlength="50">
-                                    </td>
-                                  </tr>
-                                  
-                                  <tr>
-                                    <td width="150" nowrap="" align="right">
-                                      <font class="fieldname_asterisk">*</font><font class="fieldname_required">Expiration Date&nbsp;</font>
-                                    </td>
-                                    <td>
-                                      
-                                      <div id="CC_ExpDate">
-                                        <select name="CC_ExpDate_Month" id="CC_ExpDate_Month">
-                                          <option value="">Choose Month</option><option value="01">01 - January</option><option value="02">02 - February</option><option value="03">03 - March</option><option value="04">04 - April</option><option value="05">05 - May</option><option value="06">06 - June</option><option value="07">07 - July</option><option value="08">08 - August</option><option value="09">09 - September</option><option value="10">10 - October</option><option value="11">11 - November</option><option value="12">12 - December</option>
-                                        </select>
-                                        /
-                                        <select id="card_exp_year" name="CC_ExpDate_Year">
-      <option value="">Choose Year</option>
-      <option value="2016">2016</option>
-      <option value="2017">2017</option>
-      <option value="2018">2018</option>
-      <option value="2019">2019</option>
-      <option value="2020">2020</option>
-      <option value="2021">2021</option>
-      <option value="2022">2022</option>
-      <option value="2023">2023</option>
-      <option value="2024">2024</option>
-      <option value="2025">2025</option>
-      <option value="2026">2026</option>
-      <option value="2027">2027</option>
-      <option value="2028">2028</option>
-      <option value="2029">2029</option>
-      <option value="2030">2030</option>
-      <option value="2031">2031</option>
-      </select>
-
-                                      </div>
-                                    </td>
-                                  </tr>
-                                  
-                                </tbody></table>
-                                
-                                <table>
-                                  <tbody><tr>
-                                    <td width="150" nowrap="" align="right">
-                                      <font class="fieldname_asterisk">*</font><font class="fieldname_required">Security Code&nbsp;</font>
-                                      <br>
-                                      <a href="pCCV2.asp" onclick="window.open('/Help_CCverify.asp', 'CVV2', 'resizable,width=440,height=375'); return false">
-                                        Click here for help </a>
-                                    </td>
-                                    <td>
-                                      <table cellpadding="0" cellspacing="0" border="0">
-                                        <tbody><tr>
-                                          <td>
-                                            <input id="CVV2" name="CVV2" value="" style="width: 50px;" maxlength="4" autocomplete="off">
-                                          </td>
-                                          <td>
-                                            &nbsp;
-                                          </td>
-                                          <td>
-                                            <span class="txt_cvv2_sidenotes">
-                                              <font size="1">(Required for Visa, MasterCard, AMEX &amp; Discover)</font></span>
-                                          </td>
-                                        </tr>
-                                      </tbody></table>
-                                    </td>
-                                  </tr>
-                                </tbody></table>
-                                
-                              </td>
-                            </tr>
-                          </tbody>
-                          
-                          <tbody id="ShowFields_ElectronicCheck" style="display: none;">
-                            <tr>
-                              <td width="150" align="right" nowrap="">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Bank Name&nbsp;</font>
-                              </td>
-                              <td>
-                                <input name="BankName" value="" style="width: 200px;" maxlength="20">
-                              </td>
-                            </tr>
-                            
-                            <tr>
-                              <td width="150" align="right" nowrap="">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Account Type&nbsp;</font>
-                              </td>
-                              <td>
-                                <select name="AccountType">
-                                  <option selected="">
-                                    </option>
-                                  <option value="CHECKING">
-                                    CHECKING</option>
-                                  <option value="SAVINGS">
-                                    SAVINGS</option>
-                                </select>
-                              </td>
-                            </tr>
-                            
-                            <tr>
-                              <td width="150" align="right" nowrap="">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Routing Number&nbsp;</font>
-                              </td>
-                              <td>
-                                <img src="/a/a/i//Account/Icon_eCheck_routingsymbol.gif" width="14" height="18">
-                                <input name="RoutingNumber" value="" style="width: 200px;" maxlength="20" autocomplete="off">
-                                <img src="/a/a/i//Account/Icon_eCheck_routingsymbol.gif" width="14" height="18" alt="">
-                              </td>
-                            </tr>
-                            <tr>
-                              <td width="150" align="right" nowrap="">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Account Number&nbsp;</font>
-                              </td>
-                              <td>
-                                <input name="AccountNumber" value="" style="width: 200px;" maxlength="20" autocomplete="off">
-                                <img src="/a/a/i//Account/Icon_eCheck_accountsymbol.gif" width="10" height="12" alt="">
-                              </td>
-                            </tr>
-                            
-                            <tr>
-                              <td width="150" align="right" nowrap="">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Check Number&nbsp;</font>
-                              </td>
-                              <td>
-                                <input name="CheckNumber" value="" style="width: 200px;" maxlength="5">
-                              </td>
-                            </tr>
-                            
-                          </tbody>
-                          
-                          <tbody id="ShowFields_PurchaseOrder" style="display: none;">
-                            <tr>
-                              <td width="150" align="right" nowrap="">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Purchase Order Number&nbsp;</font>
-                              </td>
-                              <td>
-                                <input name="PONum" value="" style="width: 200px;" maxlength="20">
-                              </td>
-                            </tr>
-                            
-                          </tbody>
-                          
-                          <tbody id="ShowFields_Credits" style="display: none;">
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Amount&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="text" name="StoreCredit_Amount" style="width: 200px;">
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Send to Email&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="text" name="StoreCredit_Email" style="width: 200px;" value="orbitaudio@gmail.com">
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Send to Name&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="text" name="StoreCredit_ToName" style="width: 200px;" value="Joe&nbsp;Reineke">
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_required">Gift Message&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="text" name="StoreCredit_Message" style="width: 200px;">&nbsp;(optional)
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_required">Send via Email Now&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="checkbox" class="checkbox" name="StoreCredit_SendNow" value="Y" checked="checked">
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_required">For RMA&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="checkbox" class="checkbox" name="StoreCredit_Exclude" value="Y">
-                              </td>
-                            </tr>
-                          </tbody>
-                          <tbody id="ShowFields_Manual" style="display: none;">
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Payment Date&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="text" name="Pay_AuthDate" style="width: 200px;" value="7/13/2016 6:09:50 PM">
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Payment Type&nbsp;</font>
-                              </td>
-                              <td>
-                                <select name="Pay_Result">
-                                  <option value="AUTHORIZE">AUTHORIZE</option>
-                                  <option value="CAPTURE">CAPTURE</option>
-                                  <option value="DEBIT">DEBIT / SALE (Authorize + Capture)</option>
-                                  <option value="VOID">VOID</option>
-                                  <option value="CREDIT">CREDIT - Adjustment</option>
-                                  <option value="EXCLUDE_CREDIT">CREDIT - For RMAs</option>
-                                  <option value="DECLINED">DECLINED</option>
-                                </select>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Payment Amount&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="text" name="Pay_Amount" style="width: 100px;">
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_asterisk">*</font><font class="fieldname_required">Paid Via&nbsp;</font>
-                              </td>
-                              <td>
-                                <select class="editabletextinput_small" name="Pay_PaymentMethodID">
-      <option value=""></option>
-      <option value="25">CCAccepted</option><option value="1">NONE</option><option value="5"><font><font>Visa</font></font></option><option value="6"><font><font>MasterCard</font></font></option><option value="7"><font><font>American Express</font></font></option><option value="8"><font><font>Discover</font></font></option><option value="9">Diners Club</option><option value="12">JCB</option><option value="19">FirePay</option><option value="20">Delta</option><option value="21">SOLO</option><option value="22">Switch</option><option value="18"><font><font>PayPal</font></font></option><option value="3">Electronic Check</option><option value="2"><font><font>Check by Mail</font></font></option><option value="13">Purchase Order Number</option><option value="14"><font><font>Wire Transfer</font></font></option><option value="15">COD</option><option value="16"><font><font>Money Order</font></font></option><option value="17">Cash</option><option value="28"><font><font>Synchrony Account</font></font></option><option value="29"><font><font>QuickSpark Financing</font></font></option></select>
-
-                              </td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_option">TransactionID&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="text" name="Pay_TransID" style="width: 200px;"><font><font>&nbsp;(optional)
-                              </font></font></td>
-                            </tr>
-                            <tr>
-                              <td align="right">
-                                <font class="fieldname_option">Reference Note&nbsp;</font>
-                              </td>
-                              <td>
-                                <input type="text" name="Pay_Details" style="width: 200px;"><font><font>&nbsp;(optional)
-                              </font></font></td>
-                            </tr>
-                          </tbody>
-                          <tfoot id="ShowFooter_Default">
-                            <tr>
-                              <td width="150" nowrap="" align="right">
-                                &nbsp;
-                              </td>
-                              <td>
-                                <a href="javascript:void(0);" onclick="savedCcDisabled('','submit');" class="v13-button-primary" id="applyNewPaymentButton">
-                                  <div>
-                                    Apply Payment Method</div>
-                                </a>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="2">
-                                <input type="radio" class="radio" name="Apply_Payment_Method_To_All_Orders" value="" checked="checked">
-                                Apply this payment method change to my Order#:
-                                17727
-                                <br>
-                                <input type="radio" class="radio" name="Apply_Payment_Method_To_All_Orders" value="Y">
-                                Apply this payment method change to ALL my existing orders.
-                              </td>
-                            </tr>
-                          </tfoot>
-                          <tfoot id="ShowFooter_Manual" style="display: none;">
-                            <tr>
-                              <td>
-                                <a href="AdminDetails_ProcessOrder.asp?ShowManualPayment=Y&amp;table=orders&amp;Page=1&amp;ID=17727">
-                                </a>
-                              </td>
-                              <td>
-                                <div style="display: none;">
-                                  <input type="submit" id="Add" name="Add" value="Add Offline Payment"></div>
-                                <span class="a65chrome_btn_small save"><a href="javascript:void(0);" onclick="PerformImpersonatedClickEvent('Add');">
-                                  <span>Apply Offline Payment</span></a> </span>
-                              </td>
-                            </tr>
-                          </tfoot>
-                          <tfoot id="ShowFooter_Credits" style="display: none;">
-                            <tr>
-                              <td>
-                                <a href="AdminDetails_ProcessOrder.asp?ShowManualPayment=Y&amp;table=orders&amp;Page=1&amp;ID=17727">
-                                </a>
-                              </td>
-                              <td>
-                                <input type="hidden" name="StoreCredit_CustomerID" value="5114">
-                                <div style="display: none;">
-                                  <input type="submit" id="btnissue_store_credit" name="btnissue_store_credit" value="Apply Credit"></div>
-                                <span class="a65chrome_btn_small save"><a href="javascript:void(0);" onclick="PerformImpersonatedClickEvent('btnissue_store_credit');">
-                                  <span><font><font>Apply Credit</font></font></span></a> </span>
-                              </td>
-                            </tr>
-                          </tfoot>
-                        </table>
-                        <script language="javascript" type="text/javascript"></script>
-
+                        <div class="one_row pay_credit_card pay_paypal pay_wire pay_bank pay_other" style="display:block;">
+                          <label>&nbsp;</label>
+                          <input type="radio" name="pay_option" value="received" checked /> Received&emsp;
+                          <input type="radio" name="pay_option" value="refunded" /> Refunded
+                        </div>
+                        <div class="one_row">
+                          <label for="chk_not_balance">&nbsp;</label>
+                          <input type="checkbox" name="chk_not_balance" id="chk_not_balance" value="1" /> Does Not Affect Balance
+                        </div>
+                        <div class="one_row pay_credit_card">
+                          <label for="pay_cc_save">&nbsp;</label>
+                          <input type="checkbox" name="pay_cc_save" id="pay_cc_save" value="1" /> Save Card Info
+                        </div>
+                        <div class="one_row" style="height:74px;line-height:50px;">
+                          <label for="pay_note" style="line-height:60px;display:block;float:left;">Note</label>
+                          <textarea name="pay_note" id="pay_note" style="width:58%;height:60px;resize:none;"></textarea>
+                          <div class="clear"></div>
+                        </div>
+                        <div class="one_row">
+                          <label for="btn_pay_receive">&nbsp;</label>
+                          <a href="javascript:void(0);" id="btn_pay_receive">Receive Payment</a>
+                        </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody></table>
-          </td>
-          <td>
-            <table width="100%" border="0">
-              <tbody><tr>
-                <td>
-                  <span class="customer_title">Payment Log</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="contentareanoscrollstyle v13-grid">
-                    
-                    <table class="rounded-corner rounded-table table-standard">
-                      <tbody><tr class="title underlined">
-                        <td>
-                            Payment Date</td>
-                        
-                        <td>
-                          Payment Type
-                        </td>
-                        <td>
-                          Payment Amount
-                        </td>
-                        <td colspan="2">
-                          Paid Via
-                        </td>
-                      </tr>
-                                    
-                      <tr style="cursor: default;" id="pl0a" bgcolor="#FFFFFF" class="onesmall" onmouseover="this.bgColor='#bfbfbf';v$('pl0b').bgColor=this.bgColor;" onmouseout="this.bgColor='#FFFFFF';v$('pl0b').bgColor=this.bgColor;">
-                        <td>
-                          07/01/2016 05:51PM
-                        </td>
-                        <td>
-                          DEBIT
-                        </td>
-                        <td>
-                          $3,524.00
-                        </td>
-                        <td>
-                          Visa&nbsp;
-      ************8108
+                  </form>
+                </div>
+              </td>
 
-                        </td>
-                        <td width="22">
-                                              
-                          <a title="Delete this transaction" onclick="javascript:return confirm('Are you sure you wish to delete this transaction?');" href="AdminDetails_ProcessOrder.asp?Delete_Pay=18612&amp;Page=1&amp;ID=17727">
-                            <span class="v13-icon-close"></span></a>
-                                              
-                        </td>
-                      </tr>
-                      
-                      <tr style="cursor: default;" id="pl0b" bgcolor="#FFFFFF">
-                        <td colspan="5">
-                          <div id="pl0_details" class="expandeddetails" style="display: block;">
-                            <table border="0" width="100%">
-                              <tbody><tr>
-                                <td width="160">
-                                  <div style="margin-bottom: 5px;">
-                                    <strong>AuthCode</strong>
-                                    
+              <td>    
+                <div class="contentareanoscrollstyle v13-grid">
+                  <table id="payment_log_table" class="rounded-corner rounded-table table-standard" cellspacing=0 cellpadding=0>
+                      <tbody>
+                        <tr class="title underlined">
+                          <td>Payment Date</td>
+                          <td>Payment Type</td>
+                          <td>Affects Balance</td>
+                          <td>Detail</td>
+                          <td>Payment Amount</td>
+                          <td>Balance Due</td>
+                          <td>&nbsp;</td>
+                        </tr>                       
+                      </tbody>
+                      <!-- <tfoot id="payment_records_body"></tfoot> -->
+                  </table>
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
       </div>
-                                  <div>
-                                    <strong>TransID</strong>
-                                    3BJ66239U0452600W</div>
-                      
-                                </td>
-                                <td width="250">
-                                                            
-                                  <div style="margin-bottom: 5px;">
-                                    <strong>AVS</strong>
-                                    Y</div>
-                                  <div>
-                                                            
-                                  <strong>CVV2</strong>
-                                      M</div>
-                                                             
-                                </td>
-
-                                <td colspan="2" align="right">
-                      
-                                </td>
-                              </tr>
-                            </tbody></table>
-                        
-                          </div>
-                        </td>
-                      </tr>
-                      
-                    </tbody></table>
-                    
-                  </div>
-                </td>
-              </tr>
-            </tbody></table>
-          </td>
-        </tr>
-      </tbody></table>
-      </div></div>
-  </form>
+    </div>
   <div id="floatsave" class="v13-savebar wrapper_fixed" style="visibility: hidden;">
     <div class="content_fixed">
       <div class="v13-savebar-buttoncontainer">
@@ -1032,7 +651,7 @@ $('input[name=\'product\']').autocomplete({
 	delay: 500,
 	source: function(request, response) {
 		$.ajax({
-			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_name=' + encodeURIComponent(request.term),
+			url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token;?>&filter_name=' + encodeURIComponent(request.term),
 			dataType: 'json',
 			success: function(json) {	
 				response($.map(json, function(item) {
@@ -1300,4 +919,158 @@ $('input[name=\'product\']').autocomplete({
    	}
 });	
 //--></script>  
+ <script type="text/javascript">
+  jQuery(document).ready(function ($) {
+    $('.a65chromecontent').css('display','none');
+    $('#a65chromeheader_1').click(function(){                                        
+        if($('#arrow_link_1').hasClass('rotate_arrow')) $('#arrow_link_1').removeClass('rotate_arrow');
+        else $('#arrow_link_1').addClass('rotate_arrow');      
+        $('.a65chromecontent').slideToggle(300);
+        $('html, body').animate({ scrollTop: $(this).offset().top }, 'slow');
+    });
+
+    $('select[id="pay_type"]').on('change',function(){
+      var now_val = $(this).val();
+       $('option',$(this)).each(function(){
+          var old_val = $(this).attr('value');
+          if(now_val != old_val){
+            $('#PaymentsAndCredits .new_record .pay_'+ old_val +'').css('display','none');
+          }
+          $('#PaymentsAndCredits .new_record .pay_'+ now_val +'').css('display','block');
+       });
+    });
+       
+    $('#form_payment_new').on('focus', '#pay_cash_date', function(){
+        $('#pay_cash_date').datepicker({dateFormat: 'mm-dd-yy'});  console.log('Datepicker');
+    });             
+    $('#form_payment_new').on('focus', '#pay_check_date', function(){
+        $('#pay_check_date').datepicker({dateFormat: 'mm-dd-yy'});  console.log('Datepicker');
+    });
+    $('#form_payment_new').on('focus', '#pay_wire_transfer_date', function(){
+        $('#pay_wire_transfer_date').datepicker({dateFormat: 'mm-dd-yy'});  console.log('Datepicker');
+    });
+    $('#form_payment_new').on('focus', '#pay_bank_deposit_date', function(){
+        $('#pay_bank_deposit_date').datepicker({dateFormat: 'mm-dd-yy'});  console.log('Datepicker');
+    });    
+
+    /* When Receive Payment Button click, Submit Payments Data.*/
+    function checkNum(num){
+     if(num == ""){
+      return false;
+     }
+     var isNum = /^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/;
+     return isNum.test(num);
+    }
+    function checkEmail(mail)
+    {
+     if(mail == ""){
+      return false;
+     }
+     var pattern = /^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)+$/;
+     return pattern.test(mail);
+    }
+    function checkDate(varDate) {
+     if(varDate == ""){
+      return false;
+     }
+     
+     var checkDate = /^[_0-9-]{1,2}\/[_0-9-]{1,2}\/[_0-9-]{4}$/;
+     var checkDate1 = /^[_0-9-]{1,2}\-[_0-9-]{1,2}\-[_0-9-]{4}$/;
+     return checkDate.test(varDate) || checkDate1.test(varDate);
+    }
+
+    $('#btn_pay_receive').click(function(){
+      var pay_type = $('#pay_type').val();
+
+      if(!checkNum($('#pay_amount').val())){
+        alert("Please enter correct pay amount");
+        $('#pay_amount').focus().select();
+        return false;
+      }
+
+      if(pay_type == 'credit_card'){
+        if(!checkNum($('#pay_cc_number').val())) {
+          alert("Please enter correct card number");
+          $('#pay_cc_number').focus().select();
+          return false;
+        }
+        if($('#pay_cc_name').val() == "") {
+          alert("Please enter name on card");
+          $('#pay_cc_name').focus().select();
+          return false;
+        }
+        if($('#pay_exp_month').val() == "") {
+          alert("Please select expiration month");
+          $('#pay_exp_month').trigger('click');
+          return false;
+        }
+        if($('#pay_exp_year').val() == "") {
+          alert("Please select expiration year");
+          $('#pay_exp_year').trigger('click');
+          return false;
+        }
+        if(!checkNum($('#pay_cc_cvv').val()) || $('#pay_cc_cvv').val().length != 4) {
+          alert("Please enter correct security code");
+          $('#pay_cc_cvv').focus().select();
+          return false;
+        }
+      }else if(pay_type == "paypal") {
+        if(!checkEmail($('#pay_paypal_email').val())) {
+            alert("Please enter correct paypal email address");
+            $('#pay_paypal_email').focus().select();
+            return false;
+        }
+      }
+      else if(pay_type == "check") {
+        /*if(!checkNum($('#pay_check_number').val())) {
+          alert("Please enter correct check #");
+          $('#pay_check_number').focus().select();
+          return false;
+        }*/
+        if(!checkDate($('#pay_check_date').val())) {
+          alert("Please enter correct date");
+          $('#pay_check_date').focus();
+          return false;
+        }
+      }
+      else if(pay_type == "cash") {
+        if(!checkDate($('#pay_cash_date').val())) {
+          alert("Please enter correct date");
+          $('#pay_cash_date').focus();
+          return false;
+        }
+      }
+      else if(pay_type == "wire") {
+        if(!checkDate($('#pay_wire_transfer_date').val())) {
+          alert("Please enter correct transfer date");
+          $('#pay_wire_transfer_date').focus();
+          return false;
+        }
+      }
+      else if(pay_type == "bank") {
+          if(!checkDate($('#pay_bank_deposit_date').val())) {
+          alert("Please enter correct deposit date");
+          $('#pay_bank_deposit_date').focus();
+          return false;
+        }
+      }     
+     console.log($('#form_payment_newm').serialize());
+      $.ajax({
+        url: 'index.php?route=sale/order_volusion/addOrderPayment&token=<?php echo $token; ?>',
+        type: 'POST',
+        data: $('#form_payment_new').serialize()+'&order_id=<?php echo $order_id; ?>',
+        success: function(html) {
+          console.log(html);
+          $('.title').html(html);
+
+        },
+        error: function(xhr,j,i) { console.log(xhr,j,i);
+          //$('#please_wait').hide();
+          alert(i);
+        }
+      });
+
+    });
+  });
+</script>
 <?php echo $footer; ?>
